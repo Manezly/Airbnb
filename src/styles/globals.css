@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.container-real {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.6rem;
+  padding-right: 1.6rem;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 2.7rem;
+    padding-right: 2.7rem;
+  }
+}
+
+.learn-more {
+  transition: height 500ms ease, opacity 500ms;
+  height: 3.5rem;
+}
+
+.learn-more-closed {
+  height: 0;
+  opacity: 0;
+}
+
+.search-shadow {
+  box-shadow: 0px 4px 15px -4px rgba(0, 0, 0, 0.2);
+}
+
+.icon-shadow:hover {
+  box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 100ms;
+}
+.menu-shadow {
+  box-shadow: 0px 2px 5px 1px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 100ms;
+}
+
+.height-transition {
+  height: 3.5rem;
+  transition: height 100ms;
+}
+
+.pr-auto {
+  padding-right: auto;
+}
+
+nav {
+  transition: height 200ms;
+}
+
+nav .grow-searchbar .heading-buttons {
+  transform: scaleX(1);
+  opacity: 1;
+  transition: transform 200ms, opacity 200ms;
+}
+
+nav.closed .grow-searchbar .heading-buttons {
+  transform: scaleX(0.7);
+  opacity: 0;
+}
+
+nav.closed {
+  height: 5.4rem;
+}
+
+nav.closed .grow-searchbar div .small-text {
+  display: block;
+}
+
+nav .grow-searchbar div .small-text {
+}
+
+nav.closed .grow-searchbar {
+  top: -40%;
+  width: 22rem;
+}
+
+nav .grow-searchbar {
+  top: 40%;
+  width: 90%;
+  max-width: 45rem;
+  transition: top 200ms, width 200ms, left 200ms;
+}
+
+nav > .grow-searchbar.shifted {
+  left: 50%;
+}
+
+nav.closed .grow-searchbar .bar {
+  height: 3.2rem;
+}
+
+nav .grow-searchbar .bar {
+  height: 4rem;
+}
+
+nav .grow-searchbar div .large-buttons {
+  display: flex;
+}
+
+nav.closed .grow-searchbar div .large-buttons {
+  display: none;
+}
+
+nav.closed .grow-searchbar div .magnifine-button svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+@media (min-width: 768px) {
+  nav .grow-searchbar {
+    left: 16rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  nav .grow-searchbar {
+    top: 17%;
+    left: 50%;
+  }
+  nav.shifted {
+    height: 11rem;
+  }
+}
+
+.card-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 4;
+  gap: 0rem;
+}
+
+.show-more {
+  z-index: 2;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
