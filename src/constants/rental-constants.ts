@@ -38,9 +38,9 @@ export const guestFavourites = [
   'Kitchen',
   'Washing machine',
   'Free parking on premises',
-  'Paid parking on premises',
   'Air conditioning',
   'Dedicated workspace',
+  'Self check-in',
 ] as const;
 
 export const standoutAmenities = [
@@ -66,6 +66,8 @@ export const safetyItems = [
   'Fire extinguisher',
   'Carbon monoxide alarm',
 ] as const;
+
+export const rentalTypes = ['Entire', 'Single', 'Shared'] as const;
 
 export const timeRange = [
   '06:00',

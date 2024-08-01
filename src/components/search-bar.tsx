@@ -2,7 +2,7 @@
 
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import LearnMore from './learn-more';
-import FilterButton from './filter-button';
+import FilterButton from './search-components/filter-button';
 import SearchCarousel from './search-carousel';
 import { useHomeContext } from '@/lib/hooks';
 

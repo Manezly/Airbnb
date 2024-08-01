@@ -1,78 +1,46 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { TRental } from '@/lib/types';
+import EditListingsButton from './edit-listings-button';
 
-export default function CardContainer() {
+type CardContainerProps = {
+  results: TRental[] | undefined;
+};
+
+export default function CardContainer({ results }: CardContainerProps) {
+  if (!results || results.length === 0) {
+    return <p>No results found</p>;
+  }
   return (
     <main className='container-real mt-[400px] flex justify-center'>
       <section className='card-container'>
-        <Link href='/room' className='card'>
-          <Image
-            src='https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjIzMTk3NDU3MjE4Nzg2NA%3D%3D/original/f4cbe542-3ce0-4c6f-a8f1-d2120c1b2420.jpeg?im_w=960&im_q=highq'
-            width={500}
-            height={500}
-            priority
-            alt='card image'
-            className='rounded-3xl aspect-square h-full'
-          />
-          <p className='font-bold text-sm tracking-tight pt-2'>
-            Train at the X-Mansion
-          </p>
-          <p className='text-sm opacity-80 tracking-tight'>Hosted by Jubilee</p>
-          <p className='text-sm tracking-tight'>
-            <span className='font-bold '>£30</span> per guest
-          </p>
-        </Link>
-        <Link href='/room' className='card'>
-          <Image
-            src='https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjIzMTk3NDU3MjE4Nzg2NA%3D%3D/original/f4cbe542-3ce0-4c6f-a8f1-d2120c1b2420.jpeg?im_w=960&im_q=highq'
-            width={500}
-            height={500}
-            priority
-            alt='card image'
-            className='rounded-3xl aspect-square h-full'
-          />
-          <p className='font-bold text-sm tracking-tight pt-2'>
-            Train at the X-Mansion
-          </p>
-          <p className='text-sm opacity-80 tracking-tight'>Hosted by Jubilee</p>
-          <p className='text-sm tracking-tight'>
-            <span className='font-bold '>£30</span> per guest
-          </p>
-        </Link>
-        <Link href='/room' className='card'>
-          <Image
-            src='https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjIzMTk3NDU3MjE4Nzg2NA%3D%3D/original/f4cbe542-3ce0-4c6f-a8f1-d2120c1b2420.jpeg?im_w=960&im_q=highq'
-            width={500}
-            height={500}
-            priority
-            alt='card image'
-            className='rounded-3xl aspect-square h-full'
-          />
-          <p className='font-bold text-sm tracking-tight pt-2'>
-            Train at the X-Mansion
-          </p>
-          <p className='text-sm opacity-80 tracking-tight'>Hosted by Jubilee</p>
-          <p className='text-sm tracking-tight'>
-            <span className='font-bold '>£30</span> per guest
-          </p>
-        </Link>
-        <Link href='/room' className='card'>
-          <Image
-            src='https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MTEyNjIzMTk3NDU3MjE4Nzg2NA%3D%3D/original/f4cbe542-3ce0-4c6f-a8f1-d2120c1b2420.jpeg?im_w=960&im_q=highq'
-            width={500}
-            height={500}
-            priority
-            alt='card image'
-            className='rounded-3xl aspect-square h-full'
-          />
-          <p className='font-bold text-sm tracking-tight pt-2'>
-            Train at the X-Mansion
-          </p>
-          <p className='text-sm opacity-80 tracking-tight'>Hosted by Jubilee</p>
-          <p className='text-sm tracking-tight'>
-            <span className='font-bold '>£30</span> per guest
-          </p>
-        </Link>
+        {results.map((result) => (
+          <Link
+            target='_blank'
+            key={result._id.toString()}
+            href={`/rooms/${result._id}`}
+            className='card relative'
+          >
+            <EditListingsButton rentalId={result._id.toString()} />
+            <Image
+              src={result.images[1]}
+              width={500}
+              height={500}
+              priority
+              alt='card image'
+              className='rounded-3xl aspect-square h-full'
+            />
+            <p className='font-bold text-sm tracking-tight pt-2'>
+              {result.title}
+            </p>
+            <p className='text-sm opacity-80 tracking-tight'>
+              {result.fullName}
+            </p>
+            <p className='text-sm tracking-tight'>
+              <span className='font-bold '>£{result.rates}</span> total
+            </p>
+          </Link>
+        ))}
       </section>
     </main>
   );

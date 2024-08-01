@@ -34,6 +34,11 @@ const rulesSchema = new Schema(
 
 const RentalSchema = new Schema(
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     images: [
       {
         type: String,
@@ -57,15 +62,15 @@ const RentalSchema = new Schema(
       required: true,
     },
     bedrooms: {
-      type: Number,
+      type: String,
       required: true,
     },
     beds: {
-      type: Number,
+      type: String,
       required: true,
     },
     bathrooms: {
-      type: Number,
+      type: String,
       required: true,
     },
     reviews: [
@@ -79,6 +84,10 @@ const RentalSchema = new Schema(
       required: true,
     },
     description: {
+      type: String,
+      required: true,
+    },
+    guestAccess: {
       type: String,
       required: true,
     },

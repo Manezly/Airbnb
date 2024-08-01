@@ -70,8 +70,12 @@ export default function Footer() {
           openFooter ? 'h-auto' : ''
         }`}
       >
-        {popularLinks.map((link) => (
-          <Link className='flex flex-col text-sm' href={link.href}>
+        {popularLinks.map((link, index) => (
+          <Link
+            className='flex flex-col text-sm'
+            href={link.href}
+            key={link.href + index}
+          >
             <span className='font-semibold'>{link.location}</span>
             <span className='opacity-80'>{link.type}</span>
           </Link>
@@ -93,6 +97,7 @@ export default function Footer() {
             <Link
               className='hover:border-b border-black block w-fit'
               href={link.href}
+              key={link.text}
             >
               {link.text}
             </Link>
@@ -105,6 +110,7 @@ export default function Footer() {
             <Link
               className='hover:border-b border-black block w-fit'
               href={link.href}
+              key={link.text}
             >
               {link.text}
             </Link>
@@ -112,11 +118,12 @@ export default function Footer() {
         </section>
 
         <section className='text-sm flex flex-col gap-[0.7rem] py-6 border-t border-b flex-1'>
-          <h2 className='font-semibold'>Support</h2>
+          <h2 className='font-semibold'>Airbnb</h2>
           {airbnbLinks.map((link) => (
             <Link
               className='hover:border-b border-black block w-fit'
               href={link.href}
+              key={link.text}
             >
               {link.text}
             </Link>

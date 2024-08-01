@@ -15,12 +15,16 @@ import '../styles/swiper.css';
 import { FreeMode, Navigation } from 'swiper/modules';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import AddSearchParameterButton from './search-components/add-search-parameter-button';
 
 export default function SearchCarousel() {
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentPropertyType = searchParams.get('propertyType') || '';
+  // console.log('nope', currentPropertyType);
+  // console.log('hope', slideContent[1].propertyType);
   return (
-    <nav className='container-real bg-white flex carousel-width relative items-center'>
+    <nav className='container-real bg-white flex carousel-width relative items-center '>
       <Swiper
         slidesPerView={'auto'}
         spaceBetween={0}
@@ -45,7 +49,7 @@ export default function SearchCarousel() {
       >
         {slideContent.map((slide, index) => (
           <SwiperSlide key={index}>
-            <Link
+            {/* <Link
               className={`flex flex-col gap-[0.3rem] justify-center opacity-70 items-center h-full border-b-2 border-white hover:border-black/40 hover:opacity-100 mr-6 ${
                 pathname === slide.href ? 'filter-highlight' : ''
               }`}
@@ -60,7 +64,29 @@ export default function SearchCarousel() {
                 priority
               />
               <span className='text-xs font-medium'>{slide.text}</span>
-            </Link>
+            </Link> */}
+            <AddSearchParameterButton
+              parameter='propertyType'
+              value={slide.propertyType}
+            >
+              <div
+                className={`flex flex-col gap-[0.3rem] justify-center items-center h-full border-b-2 ${
+                  currentPropertyType === slide.propertyType
+                    ? 'border-black opacity-100'
+                    : 'border-white opacity-70'
+                } hover:border-black/40 hover:opacity-100 mr-6`}
+              >
+                <Image
+                  className='size-6'
+                  src={slide.img}
+                  width={20}
+                  height={20}
+                  alt={slide.alt}
+                  priority
+                />
+                <span className='text-xs font-medium'>{slide.text}</span>
+              </div>
+            </AddSearchParameterButton>
           </SwiperSlide>
         ))}
       </Swiper>
@@ -89,194 +115,58 @@ export default function SearchCarousel() {
 const slideContent = [
   {
     href: '/',
-    text: 'Icons',
+    text: 'All',
     img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-banknote-2.png',
-    alt: 'Icons',
+    alt: 'All',
+    propertyType: '',
   },
   {
-    href: '/national-park',
-    text: 'National parks',
+    href: '/search/Windmill',
+    text: 'Windmill',
     img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2016/96/iconmonstr-weather-94.png',
-    alt: 'National parks',
+    alt: 'Windmill',
+    propertyType: 'Windmill',
   },
   {
-    href: '/catles',
+    href: '/search/castle',
     text: 'Castles',
     img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-44.png',
     alt: 'Castles',
+    propertyType: 'Castle',
   },
   {
-    href: '/lake-front',
-    text: 'Lake front',
+    href: '/search/guest-house',
+    text: 'Guest house',
     img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2014/96/iconmonstr-drop-26.png',
-    alt: 'Lake front',
+    alt: 'guest house',
+    propertyType: 'Guest house',
   },
   {
     href: '/cave',
     text: 'Caves',
     img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-5.png',
     alt: 'Caves',
+    propertyType: 'Caves',
   },
   {
     href: '/omg',
     text: 'OMG!',
     img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2019/240/iconmonstr-party-2.png',
     alt: 'OMG!',
+    propertyType: 'OMG',
   },
   {
     href: '/cabin',
     text: 'Cabins',
     img: '	https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-3.png',
     alt: 'Cabins',
+    propertyType: 'Cabins',
   },
   {
     href: '/beachfront',
     text: 'Beachfront',
     img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-coffee-19.png',
     alt: 'Beachfront',
-  },
-  {
-    href: '/',
-    text: 'Icons',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-banknote-2.png',
-    alt: 'Icons',
-  },
-  {
-    href: '/national-park',
-    text: 'National parks',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2016/96/iconmonstr-weather-94.png',
-    alt: 'National parks',
-  },
-  {
-    href: '/catles',
-    text: 'Castles',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-44.png',
-    alt: 'Castles',
-  },
-  {
-    href: '/lake-front',
-    text: 'Lake front',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2014/96/iconmonstr-drop-26.png',
-    alt: 'Lake front',
-  },
-  {
-    href: '/cave',
-    text: 'Caves',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-5.png',
-    alt: 'Caves',
-  },
-  {
-    href: '/omg',
-    text: 'OMG!',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2019/240/iconmonstr-party-2.png',
-    alt: 'OMG!',
-  },
-  {
-    href: '/cabin',
-    text: 'Cabins',
-    img: '	https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-3.png',
-    alt: 'Cabins',
-  },
-  {
-    href: '/beachfront',
-    text: 'Beachfront',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-coffee-19.png',
-    alt: 'Beachfront',
-  },
-  {
-    href: '/',
-    text: 'Icons',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-banknote-2.png',
-    alt: 'Icons',
-  },
-  {
-    href: '/national-park',
-    text: 'National parks',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2016/96/iconmonstr-weather-94.png',
-    alt: 'National parks',
-  },
-  {
-    href: '/catles',
-    text: 'Castles',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-44.png',
-    alt: 'Castles',
-  },
-  {
-    href: '/lake-front',
-    text: 'Lake front',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2014/96/iconmonstr-drop-26.png',
-    alt: 'Lake front',
-  },
-  {
-    href: '/cave',
-    text: 'Caves',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-5.png',
-    alt: 'Caves',
-  },
-  {
-    href: '/omg',
-    text: 'OMG!',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2019/240/iconmonstr-party-2.png',
-    alt: 'OMG!',
-  },
-  {
-    href: '/cabin',
-    text: 'Cabins',
-    img: '	https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-3.png',
-    alt: 'Cabins',
-  },
-  {
-    href: '/beachfront',
-    text: 'Beachfront',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-coffee-19.png',
-    alt: 'Beachfront',
-  },
-  {
-    href: '/',
-    text: 'Icons',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-banknote-2.png',
-    alt: 'Icons',
-  },
-  {
-    href: '/national-park',
-    text: 'National parks',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2016/96/iconmonstr-weather-94.png',
-    alt: 'National parks',
-  },
-  {
-    href: '/catles',
-    text: 'Castles',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-44.png',
-    alt: 'Castles',
-  },
-  {
-    href: '/lake-front',
-    text: 'Lake front',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2014/96/iconmonstr-drop-26.png',
-    alt: 'Lake front',
-  },
-  {
-    href: '/cave',
-    text: 'Caves',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-5.png',
-    alt: 'Caves',
-  },
-  {
-    href: '/omg',
-    text: 'OMG!',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2019/240/iconmonstr-party-2.png',
-    alt: 'OMG!',
-  },
-  {
-    href: '/cabin',
-    text: 'Cabins',
-    img: '	https://cdns.iconmonstr.com/wp-content/releases/preview/2017/240/iconmonstr-building-3.png',
-    alt: 'Cabins',
-  },
-  {
-    href: '/beachfront',
-    text: 'Beachfront',
-    img: 'https://cdns.iconmonstr.com/wp-content/releases/preview/2013/240/iconmonstr-coffee-19.png',
-    alt: 'Beachfront',
+    propertyType: 'Beachfront',
   },
 ];

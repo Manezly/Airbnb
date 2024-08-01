@@ -20,7 +20,14 @@ const BookingSchema = new Schema(
       type: Date,
       required: true,
     },
-    // Add other fields as needed
+    guests: {
+      type: Number,
+      required: true,
+    },
+    activeBooking: {
+      type: Boolean,
+      required: true,
+    },
   },
   {
     timestamps: true,

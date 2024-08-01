@@ -12,15 +12,36 @@ import MobileSearchbar from './search-bar';
 import { useHomeContext } from '@/lib/hooks';
 import { Cross1Icon } from '@radix-ui/react-icons';
 import AuthenticateForm from './authenticate-form';
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { countUnreadMessages, fetchUsername } from '@/actions/actions';
 
 export default function Header() {
   const { isLoginOpen, setIsLoginOpen } = useHomeContext();
+  const [unreadMessages, setUnreadMessages] = useState<number>(0);
+  const [username, setUsername] = useState<string>('');
 
+  useEffect(() => {
+    const checkMessages = async () => {
+      const numberOfMessages = await countUnreadMessages();
+      if (numberOfMessages) {
+        setUnreadMessages(numberOfMessages.unreadMessageCount);
+      }
+    };
+
+    const userDetails = async () => {
+      const username = await fetchUsername();
+      if (username) {
+        setUsername(username);
+      }
+    };
+
+    checkMessages();
+    userDetails();
+  }, []);
   return (
     <header className='z-60'>
       <MobileSearchbar />
-      <DesktopNavBar />
+      <DesktopNavBar unreadMessages={unreadMessages} username={username} />
 
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
         <DialogPortal>

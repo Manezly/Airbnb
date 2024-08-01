@@ -1,14 +1,24 @@
 'use client';
 
-import { handleSignOut, isUserSignedIn } from '@/lib/authenticate';
 import { useHomeContext } from '@/lib/hooks';
 import Link from 'next/link';
 
-export default function BurgerMenu() {
+type BurgerMenuProps = {
+  authToken: string | undefined;
+  deleteCookie: () => void;
+  unreadMessages: number | null;
+};
+
+export default function BurgerMenu({
+  authToken,
+  deleteCookie,
+  unreadMessages,
+}: BurgerMenuProps) {
   const { setIsLoginOpen } = useHomeContext();
+  console.log('unreadmessages:', unreadMessages);
   return (
     <nav className='absolute right-0  bg-white border border-black/5 rounded-xl w-[14rem] top-[120%] py-2 menu-shadow z-200'>
-      {!isUserSignedIn() ? (
+      {!authToken ? (
         <ul>
           <li>
             <button
@@ -19,7 +29,10 @@ export default function BurgerMenu() {
             </button>
           </li>
           <li>
-            <button className='hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'>
+            <button
+              onClick={() => setIsLoginOpen(true)}
+              className='hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
+            >
               Log in
             </button>
           </li>
@@ -33,12 +46,12 @@ export default function BurgerMenu() {
             </Link>
           </li>
           <li>
-            <Link
+            <button
               className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
-              href='/'
+              onClick={() => setIsLoginOpen(true)}
             >
               Airbnb your home
-            </Link>
+            </button>
           </li>
           <li>
             <Link
@@ -52,20 +65,33 @@ export default function BurgerMenu() {
       ) : (
         <ul>
           <li>
-            <button className='hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'>
-              Messages
-            </button>
+            {unreadMessages === 0 ? (
+              <Link
+                href='/messages'
+                className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
+              >
+                Messages
+              </Link>
+            ) : (
+              <Link
+                href='/messages'
+                className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal relative'
+              >
+                Messages
+                <span className='absolute size-2 rounded-full bg-red-500'></span>
+              </Link>
+            )}
           </li>
-          <li>
+          {/* <li>
             <button className='hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'>
               Trips
             </button>
-          </li>
+          </li> */}
 
           <li>
             <Link
               className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
-              href='/'
+              href='/wishlists'
             >
               Wishlists
             </Link>
@@ -74,7 +100,15 @@ export default function BurgerMenu() {
           <li>
             <Link
               className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
-              href='/'
+              href='/hosting'
+            >
+              Manage listings
+            </Link>
+          </li>
+          <li>
+            <Link
+              className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
+              href='/create'
             >
               Airbnb your home
             </Link>
@@ -82,7 +116,7 @@ export default function BurgerMenu() {
           <li>
             <Link
               className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
-              href='/'
+              href='/listings'
             >
               Account
             </Link>
@@ -107,7 +141,7 @@ export default function BurgerMenu() {
           <li>
             <button
               className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
-              onClick={handleSignOut}
+              onClick={() => deleteCookie()}
             >
               Log out
             </button>

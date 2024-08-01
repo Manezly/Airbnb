@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { useForm, UseFormSetValue } from 'react-hook-form';
+import { useForm, UseFormSetValue, Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   guestFavourites,
@@ -32,6 +32,7 @@ import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
 import { createRental } from '@/actions/actions';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const addressSchema = z.object({
   propertyName: z.string(),
@@ -41,10 +42,10 @@ const addressSchema = z.object({
   country: z.string().min(1),
 });
 
-const rentalTypes = ['Entire', 'Single', 'Shared'];
+const rentalTypes = ['Entire', 'Single', 'Shared'] as const;
 
 const createSchema = z.object({
-  // images: z.array(z.string().min(5)),
+  images: z.array(z.string().min(5)),
   title: z.string().min(1),
   propertyType: z.enum(propertyTypes),
   rentalType: z.enum(rentalTypes),
@@ -54,6 +55,7 @@ const createSchema = z.object({
   bathrooms: z.string().min(1),
   overview: z.string().min(1),
   description: z.string().min(1),
+  guestAccess: z.string().min(0),
   // highlights: z.string(),
   guestFavourites: z.array(z.enum(guestFavourites)).optional(),
   standoutAmenities: z.array(z.enum(standoutAmenities)).optional(),
@@ -75,12 +77,14 @@ const createSchema = z.object({
   }),
 });
 
+type FormData = z.infer<typeof createSchema>;
+
 export default function CreateForm() {
   const router = useRouter();
   const form = useForm<z.infer<typeof createSchema>>({
     resolver: zodResolver(createSchema),
     defaultValues: {
-      // images: [''], // Default value for the first image input
+      images: [], // Default value for the first image input
       title: '',
       propertyType: 'House',
       rentalType: 'Entire',
@@ -90,6 +94,7 @@ export default function CreateForm() {
       bathrooms: '1',
       overview: '',
       description: '',
+      guestAccess: '',
       // highlights: '',
       guestFavourites: [],
       standoutAmenities: [],
@@ -118,17 +123,7 @@ export default function CreateForm() {
     },
   });
 
-  const createPost = async (data: z.infer<typeof createSchema>) => {
-    try {
-      const result = await createRental(data);
-      console.log('Rental ID:', result.rentalId);
-      router.push(`/rooms/${result.rentalId}`);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const { control, setValue } = form;
+  const { control, setValue, watch } = form;
 
   const handleCheckboxChange = (
     value: string,
@@ -141,6 +136,55 @@ export default function CreateForm() {
       : [...currentValues, value];
     setValue(fieldName, newValue);
   };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      const currentImages = watch('images');
+
+      // Function to read files as base64
+      const readFilesAsDataURL = (files: File[]) => {
+        return Promise.all(
+          files.map(
+            (file) =>
+              new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+              })
+          )
+        );
+      };
+
+      readFilesAsDataURL(fileArray).then((base64Files) => {
+        setValue('images', [...currentImages, ...base64Files]);
+      });
+    }
+  };
+
+  const handleImageClickDelete = (src: string) => {
+    const currentImages = watch('images');
+    const updateImages = currentImages.filter((image) => image !== src);
+    setValue('images', updateImages);
+  };
+
+  const createPost = async (data: z.infer<typeof createSchema>) => {
+    try {
+      const result = await createRental(data);
+      console.log('Rental ID:', result?.rentalId);
+      router.push(`/rooms/${result?.rentalId}`);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const selectedImages = watch('images');
+
+  // useEffect(() => {
+  //   console.log('Form Data:', form.getValues());
+  // }, [selectedImages, form]);
 
   return (
     <Form {...form}>
@@ -167,6 +211,34 @@ export default function CreateForm() {
             );
           }}
         />
+
+        <div>
+          <FormLabel className='text-xl'>Images</FormLabel>
+          <Input
+            type='file'
+            onChange={handleImageChange}
+            multiple
+            className=' mt-2 w-auto flex justify-center items-center hover:cursor-pointer p-4 h-auto hover:border-black hover:bg-black/10'
+          />
+          {selectedImages && selectedImages.length > 0 && (
+            <div className='mt-4'>
+              <h4 className='text-lg'>
+                Selected Images: {selectedImages.length}
+              </h4>
+              <ul className='flex flex-wrap gap-5'>
+                {selectedImages.map((src, index) => (
+                  <li
+                    className='list-none'
+                    key={`image-${index}`}
+                    onClick={() => handleImageClickDelete(src)}
+                  >
+                    <img src={src} className='w-44 h-44 object-cover' />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
 
         <FormField
           control={form.control}
@@ -337,7 +409,10 @@ export default function CreateForm() {
               <FormItem>
                 <FormLabel className='text-xl'>Overview</FormLabel>
                 <FormControl>
-                  <Textarea placeholder='Write a brief overview' {...field} />
+                  <Textarea
+                    placeholder='Write a brief overview of the area'
+                    {...field}
+                  />
                 </FormControl>
               </FormItem>
             );
@@ -351,32 +426,32 @@ export default function CreateForm() {
               <FormItem>
                 <FormLabel className='text-xl'>Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder='Write a full description' {...field} />
+                  <Textarea
+                    placeholder='Write a full description of the property'
+                    {...field}
+                  />
                 </FormControl>
               </FormItem>
             );
           }}
         />
-
-        {/* <FormField
+        <FormField
           control={form.control}
-          name='guestFavourites'
+          name='guestAccess'
           render={({ field }) => {
             return (
-              <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow'>
+              <FormItem>
+                <FormLabel className='text-xl'>Guest Access</FormLabel>
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
+                  <Textarea
+                    placeholder='Write a full description of what guests have access to'
+                    {...field}
                   />
                 </FormControl>
-                <div className='space-y-1 leading-none'>
-                  <FormLabel>Wifi</FormLabel>
-                </div>
               </FormItem>
             );
           }}
-        /> */}
+        />
 
         {/* Guest Favourites */}
         <FormField

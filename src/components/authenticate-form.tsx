@@ -17,8 +17,11 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { OTPInput, SlotProps } from 'input-otp';
 import { cn } from '@/lib/utils';
-import { sendVerificationCode, verifyCode } from '@/actions/actions';
-import { redirect } from 'next/navigation';
+import {
+  sendVerificationCode,
+  updateUserInfo,
+  verifyCode,
+} from '@/actions/actions';
 
 const formSchema = z.object({
   phoneNumber: z.string().refine((value) => value.length === 10, {
@@ -27,11 +30,16 @@ const formSchema = z.object({
   countryRegion: z.string(),
 });
 
+const userDetailsSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+  fullName: z.string().min(1, { message: 'Full name is required' }),
+});
+
 export default function AuthenticateForm() {
   const [verificationScreen, setVerificationScreen] = useState(false);
+  const [userDetailsScreen, setUserDetailsScreen] = useState(false);
   const [phonenumber, setPhonenumber] = useState('');
   const [otpValue, setOtpValue] = useState('');
-  // const [otpValid, SetOtpValid] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verficationErrorMessage, setVerificationErrorMessage] = useState('');
 
@@ -42,10 +50,18 @@ export default function AuthenticateForm() {
     },
   });
 
-  const handleContinue = (values: z.infer<typeof formSchema>) => {
+  const userDetailsForm = useForm<z.infer<typeof userDetailsSchema>>({
+    resolver: zodResolver(userDetailsSchema),
+    defaultValues: {
+      email: '',
+      fullName: '',
+    },
+  });
+
+  const handleContinue = async (values: z.infer<typeof formSchema>) => {
     const phone = '+44' + values.phoneNumber;
     setPhonenumber(phone);
-    sendVerificationCode(phone);
+    await sendVerificationCode(phone);
     setVerificationScreen(true);
   };
 
@@ -56,9 +72,11 @@ export default function AuthenticateForm() {
       const result = await verifyCode(phonenumber, otpValue);
 
       if (result.token) {
-        localStorage.setItem('authToken', result.token);
-        window.location.href = '/';
-        console.log('redirected');
+        if (!result.hasCompleteDeets) {
+          setUserDetailsScreen(true);
+        } else {
+          window.location.href = '/';
+        }
       } else {
         setVerificationErrorMessage(
           result.message || 'Verification failed, please try again.'
@@ -70,6 +88,61 @@ export default function AuthenticateForm() {
       setIsVerifying(false);
     }
   };
+
+  const handleUserDetailsSubmit = async (
+    values: z.infer<typeof userDetailsSchema>
+  ) => {
+    try {
+      await updateUserInfo(phonenumber, values);
+      window.location.href = '/';
+    } catch (error) {
+      setVerificationErrorMessage(
+        'Failed to update user details, please try again'
+      );
+    }
+  };
+
+  if (userDetailsScreen) {
+    return (
+      <Form {...userDetailsForm}>
+        <form
+          onSubmit={userDetailsForm.handleSubmit(handleUserDetailsSubmit)}
+          className='flex flex-col gap-2'
+        >
+          <FormField
+            control={userDetailsForm.control}
+            name='email'
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder='Email' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={userDetailsForm.control}
+            name='fullName'
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder='Full Name' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            className='bg-rose-600 w-full py-6 hover:bg-rose-500 my-4'
+            type='submit'
+          >
+            Submit
+          </Button>
+        </form>
+      </Form>
+    );
+  }
 
   if (verificationScreen) {
     return (
@@ -106,114 +179,113 @@ export default function AuthenticateForm() {
         )}
       </>
     );
-  } else {
-    return (
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleContinue)}
-          className='flex flex-col gap-2'
-        >
-          <FormField
-            control={form.control}
-            name='countryRegion'
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <Select onValueChange={field.onChange}>
-                    <FormControl className='py-6 text-md focus:border-[1.2px] focus:border-black'>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Country/Region' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value='UK'>United Kingdon (+44)</SelectItem>
-                      <SelectItem value='USA'>United States (+1)</SelectItem>
-                    </SelectContent>
-                    <FormMessage />
-                  </Select>
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name='phoneNumber'
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder='Phone number'
-                      type='tel'
-                      {...field}
-                      className='py-6 text-md focus:border-[1.2px] focus:border-black'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <Button
-            className='bg-rose-600 w-full py-6 hover:bg-rose-500 my-4'
-            type='submit'
-          >
-            Continue
-          </Button>
-
-          <div className='flex items-center opacity-50'>
-            <div className='h-[0.1px] flex-1 bg-black'></div>
-            <p className='text-xs px-4'>or</p>
-            <div className='h-[0.1px] flex-1 bg-black'></div>
-          </div>
-
-          <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black my-4 px-4 relative'>
-            <Image
-              src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMCAwdjI0aDI0di0yNGgtMjR6bTE2IDdoLTEuOTIzYy0uNjE2IDAtMS4wNzcuMjUyLTEuMDc3Ljg4OXYxLjExMWgzbC0uMjM5IDNoLTIuNzYxdjhoLTN2LThoLTJ2LTNoMnYtMS45MjNjMC0yLjAyMiAxLjA2NC0zLjA3NyAzLjQ2MS0zLjA3N2gyLjUzOXYzeiIvPjwvc3ZnPg=='
-              height={21}
-              width={21}
-              alt='facebook icon'
-              className='absolute left-8'
-            />
-            Continue with Facebook
-          </Button>
-
-          <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black px-4 relative'>
-            <Image
-              src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMCAwdjI0aDI0di0yNGgtMjR6bTguNjY3IDE2LjY2N2MtMi41ODEgMC00LjY2Ny0yLjA4Ny00LjY2Ny00LjY2N3MyLjA4Ni00LjY2NyA0LjY2Ny00LjY2N2MxLjI2IDAgMi4zMTMuNDYgMy4xMjcgMS4yMmwtMS4yNjcgMS4yMmMtLjM0Ny0uMzMzLS45NTQtLjcyLTEuODYtLjcyLTEuNTkzIDAtMi44OTMgMS4zMi0yLjg5MyAyLjk0N3MxLjMgMi45NDcgMi44OTMgMi45NDdjMS44NDcgMCAyLjU0LTEuMzI3IDIuNjQ3LTIuMDEzaC0yLjY0N3YtMS42aDQuNDA2Yy4wNDEuMjMzLjA3NC40NjcuMDc0Ljc3MyAwIDIuNjY2LTEuNzg3IDQuNTYtNC40OCA0LjU2em0xMS4zMzMtNGgtMnYyaC0xLjMzM3YtMmgtMnYtMS4zMzNoMnYtMmgxLjMzM3YyaDJ2MS4zMzN6Ii8+PC9zdmc+'
-              height={21}
-              width={21}
-              alt='facebook icon'
-              className='absolute left-8'
-            />
-            Continue with Google
-          </Button>
-
-          <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black my-4 px-4 relative'>
-            <Image
-              src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjIgMTcuNjA3Yy0uNzg2IDIuMjgtMy4xMzkgNi4zMTctNS41NjMgNi4zNjEtMS42MDguMDMxLTIuMTI1LS45NTMtMy45NjMtLjk1My0xLjgzNyAwLTIuNDEyLjkyMy0zLjkzMi45ODMtMi41NzIuMDk5LTYuNTQyLTUuODI3LTYuNTQyLTEwLjk5NSAwLTQuNzQ3IDMuMzA4LTcuMSA2LjE5OC03LjE0MyAxLjU1LS4wMjggMy4wMTQgMS4wNDUgMy45NTkgMS4wNDUuOTQ5IDAgMi43MjctMS4yOSA0LjU5Ni0xLjEwMS43ODIuMDMzIDIuOTc5LjMxNSA0LjM4OSAyLjM3Ny0zLjc0MSAyLjQ0Mi0zLjE1OCA3LjU0OS44NTggOS40MjZ6bS01LjIyMi0xNy42MDdjLTIuODI2LjExNC01LjEzMiAzLjA3OS00LjgxIDUuNTMxIDIuNjEyLjIwMyA1LjExOC0yLjcyNSA0LjgxLTUuNTMxeiIvPjwvc3ZnPg=='
-              height={21}
-              width={21}
-              alt='facebook icon'
-              className='absolute left-8'
-            />
-            Continue with Apple
-          </Button>
-
-          <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black px-4 relative'>
-            <Image
-              src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yNCAyMWgtMjR2LTE4aDI0djE4em0tMjMtMTYuNDc3djE1LjQ3N2gyMnYtMTUuNDc3bC0xMC45OTkgMTAtMTEuMDAxLTEwem0yMS4wODktLjUyM2gtMjAuMTc2bDEwLjA4OCA5LjE3MSAxMC4wODgtOS4xNzF6Ii8+PC9zdmc+'
-              height={21}
-              width={21}
-              alt='facebook icon'
-              className='absolute left-8'
-            />
-            Continue with email
-          </Button>
-        </form>
-      </Form>
-    );
   }
+  return (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleContinue)}
+        className='flex flex-col gap-2'
+      >
+        <FormField
+          control={form.control}
+          name='countryRegion'
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <Select onValueChange={field.onChange}>
+                  <FormControl className='py-6 text-md focus:border-[1.2px] focus:border-black'>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Country/Region' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='UK'>United Kingdon (+44)</SelectItem>
+                    <SelectItem value='USA'>United States (+1)</SelectItem>
+                  </SelectContent>
+                  <FormMessage />
+                </Select>
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name='phoneNumber'
+          render={({ field }) => {
+            return (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    placeholder='Phone number'
+                    type='tel'
+                    {...field}
+                    className='py-6 text-md focus:border-[1.2px] focus:border-black'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <Button
+          className='bg-rose-600 w-full py-6 hover:bg-rose-500 my-4'
+          type='submit'
+        >
+          Continue
+        </Button>
+
+        <div className='flex items-center opacity-50'>
+          <div className='h-[0.1px] flex-1 bg-black'></div>
+          <p className='text-xs px-4'>or</p>
+          <div className='h-[0.1px] flex-1 bg-black'></div>
+        </div>
+
+        <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black my-4 px-4 relative'>
+          <Image
+            src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMCAwdjI0aDI0di0yNGgtMjR6bTE2IDdoLTEuOTIzYy0uNjE2IDAtMS4wNzcuMjUyLTEuMDc3Ljg4OXYxLjExMWgzbC0uMjM5IDNoLTIuNzYxdjhoLTN2LThoLTJ2LTNoMnYtMS45MjNjMC0yLjAyMiAxLjA2NC0zLjA3NyAzLjQ2MS0zLjA3N2gyLjUzOXYzeiIvPjwvc3ZnPg=='
+            height={21}
+            width={21}
+            alt='facebook icon'
+            className='absolute left-8'
+          />
+          Continue with Facebook
+        </Button>
+
+        <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black px-4 relative'>
+          <Image
+            src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMCAwdjI0aDI0di0yNGgtMjR6bTguNjY3IDE2LjY2N2MtMi41ODEgMC00LjY2Ny0yLjA4Ny00LjY2Ny00LjY2N3MyLjA4Ni00LjY2NyA0LjY2Ny00LjY2N2MxLjI2IDAgMi4zMTMuNDYgMy4xMjcgMS4yMmwtMS4yNjcgMS4yMmMtLjM0Ny0uMzMzLS45NTQtLjcyLTEuODYtLjcyLTEuNTkzIDAtMi44OTMgMS4zMi0yLjg5MyAyLjk0N3MxLjMgMi45NDcgMi44OTMgMi45NDdjMS44NDcgMCAyLjU0LTEuMzI3IDIuNjQ3LTIuMDEzaC0yLjY0N3YtMS42aDQuNDA2Yy4wNDEuMjMzLjA3NC40NjcuMDc0Ljc3MyAwIDIuNjY2LTEuNzg3IDQuNTYtNC40OCA0LjU2em0xMS4zMzMtNGgtMnYyaC0xLjMzM3YtMmgtMnYtMS4zMzNoMnYtMmgxLjMzM3YyaDJ2MS4zMzN6Ii8+PC9zdmc+'
+            height={21}
+            width={21}
+            alt='facebook icon'
+            className='absolute left-8'
+          />
+          Continue with Google
+        </Button>
+
+        <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black my-4 px-4 relative'>
+          <Image
+            src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjIgMTcuNjA3Yy0uNzg2IDIuMjgtMy4xMzkgNi4zMTctNS41NjMgNi4zNjEtMS42MDguMDMxLTIuMTI1LS45NTMtMy45NjMtLjk1My0xLjgzNyAwLTIuNDEyLjkyMy0zLjkzMi45ODMtMi41NzIuMDk5LTYuNTQyLTUuODI3LTYuNTQyLTEwLjk5NSAwLTQuNzQ3IDMuMzA4LTcuMSA2LjE5OC03LjE0MyAxLjU1LS4wMjggMy4wMTQgMS4wNDUgMy45NTkgMS4wNDUuOTQ5IDAgMi43MjctMS4yOSA0LjU5Ni0xLjEwMS43ODIuMDMzIDIuOTc5LjMxNSA0LjM4OSAyLjM3Ny0zLjc0MSAyLjQ0Mi0zLjE1OCA3LjU0OS44NTggOS40MjZ6bS01LjIyMi0xNy42MDdjLTIuODI2LjExNC01LjEzMiAzLjA3OS00LjgxIDUuNTMxIDIuNjEyLjIwMyA1LjExOC0yLjcyNSA0LjgxLTUuNTMxeiIvPjwvc3ZnPg=='
+            height={21}
+            width={21}
+            alt='facebook icon'
+            className='absolute left-8'
+          />
+          Continue with Apple
+        </Button>
+
+        <Button className='bg-white py-6 w-full hover:bg-black/5 text-black border-[1px] border-black px-4 relative'>
+          <Image
+            src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yNCAyMWgtMjR2LTE4aDI0djE4em0tMjMtMTYuNDc3djE1LjQ3N2gyMnYtMTUuNDc3bC0xMC45OTkgMTAtMTEuMDAxLTEwem0yMS4wODktLjUyM2gtMjAuMTc2bDEwLjA4OCA5LjE3MSAxMC4wODgtOS4xNzF6Ii8+PC9zdmc+'
+            height={21}
+            width={21}
+            alt='facebook icon'
+            className='absolute left-8'
+          />
+          Continue with email
+        </Button>
+      </form>
+    </Form>
+  );
 }
 
 function Slot(props: SlotProps) {
