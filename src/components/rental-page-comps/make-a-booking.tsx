@@ -252,7 +252,7 @@ export default function MakeABooking({ rates, rentalId }: MakeABookingProps) {
           Submit
         </Button>
         <p className='opacity-80 text-center pb-2 text-sm'>
-          You won't be charged yet
+          You won&apos;t be charged yet
         </p>
         <div className='flex justify-between opacity-80'>
           <p className='underline tracking-tight'>

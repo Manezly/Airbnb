@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { fetchAllRentals } from '@/actions/actions';
 import CardContainer from '@/components/card-container';
 import PaginationController from '@/components/pagination-controller';

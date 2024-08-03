@@ -35,6 +35,7 @@ import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
 import { useRouter } from 'next/navigation';
 import { FetchedRentalSchema } from '@/lib/types';
+import Image from 'next/image';
 
 const addressSchema = z.object({
   propertyName: z.string(),
@@ -249,7 +250,13 @@ export default function RentalEditForm({ initialData }: RentalEditFormProps) {
                     key={`image-${index}`}
                     onClick={() => handleImageClickDelete(src)}
                   >
-                    <img src={src} className='w-44 h-44 object-cover' />
+                    <Image
+                      src={src}
+                      width={240}
+                      height={240}
+                      className='w-44 h-44 object-cover'
+                      alt='Upload image'
+                    />
                   </li>
                 ))}
               </ul>

@@ -1,6 +1,8 @@
+'force-dynamic';
+
 import MessageBox from '@/components/messages/message-box';
 import MessagesNavigation from '@/components/messages/messages-navigation';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 type ParamsType = {
   params: {
@@ -12,7 +14,9 @@ export default function page({ params }: ParamsType) {
 
   return (
     <section className='flex container-real py-8'>
-      <MessagesNavigation conversationId={conversationId} />
+      <Suspense fallback={<div>Loading messages...</div>}>
+        <MessagesNavigation conversationId={conversationId} />
+      </Suspense>
       <MessageBox conversationId={conversationId} />
     </section>
   );

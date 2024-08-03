@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState } from 'react';
+import React, { Suspense, useRef, useState } from 'react';
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -65,28 +65,30 @@ export default function SearchCarousel() {
               />
               <span className='text-xs font-medium'>{slide.text}</span>
             </Link> */}
-            <AddSearchParameterButton
-              parameter='propertyType'
-              value={slide.propertyType}
-            >
-              <div
-                className={`flex flex-col gap-[0.3rem] justify-center items-center h-full border-b-2 ${
-                  currentPropertyType === slide.propertyType
-                    ? 'border-black opacity-100'
-                    : 'border-white opacity-70'
-                } hover:border-black/40 hover:opacity-100 mr-6`}
+            <Suspense fallback={<div>Loading...</div>}>
+              <AddSearchParameterButton
+                parameter='propertyType'
+                value={slide.propertyType}
               >
-                <Image
-                  className='size-6'
-                  src={slide.img}
-                  width={20}
-                  height={20}
-                  alt={slide.alt}
-                  priority
-                />
-                <span className='text-xs font-medium'>{slide.text}</span>
-              </div>
-            </AddSearchParameterButton>
+                <div
+                  className={`flex flex-col gap-[0.3rem] justify-center items-center h-full border-b-2 ${
+                    currentPropertyType === slide.propertyType
+                      ? 'border-black opacity-100'
+                      : 'border-white opacity-70'
+                  } hover:border-black/40 hover:opacity-100 mr-6`}
+                >
+                  <Image
+                    className='size-6'
+                    src={slide.img}
+                    width={20}
+                    height={20}
+                    alt={slide.alt}
+                    priority
+                  />
+                  <span className='text-xs font-medium'>{slide.text}</span>
+                </div>
+              </AddSearchParameterButton>
+            </Suspense>
           </SwiperSlide>
         ))}
       </Swiper>

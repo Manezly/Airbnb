@@ -56,8 +56,8 @@ export default function ThingsToKnow({
                   House rules
                 </h2>
                 <p>
-                  You'll be staying in someone's home, so please treat it with
-                  care and respect.
+                  You&apos;ll be staying in someone&apos;s home, so please treat
+                  it with care and respect.
                 </p>
                 <h4 className='font-medium py-4'>Checking in and out</h4>
                 <div className=''>
@@ -207,8 +207,8 @@ export default function ThingsToKnow({
                   Safety & property
                 </h2>
                 <p>
-                  You'll be staying in someone's home, so please treat it with
-                  care and respect.
+                  You&apos;ll be staying in someone&apos;s home, so please treat
+                  it with care and respect.
                 </p>
                 <h4 className='font-medium py-4'>Safety devices</h4>
                 {safetyItems.includes('Smoke alarm') && (
@@ -303,8 +303,8 @@ export default function ThingsToKnow({
             </p>
           )}
           <p className='opacity-90 py-[0.3rem]'>
-            Review the Host’s full cancellation policy which applies even if you
-            cancel for illness or disruptions caused by COVID-19.
+            Review the Host&apos;s full cancellation policy which applies even
+            if you cancel for illness or disruptions caused by COVID-19.
           </p>
           <Dialog>
             <DialogTrigger asChild>
@@ -317,9 +317,10 @@ export default function ThingsToKnow({
                   Cancellation policy
                 </h2>
                 <p>
-                  Make sure you’re comfortable with this Host’s policy. In rare
-                  cases, you may be eligible for a refund outside of this policy
-                  under Airbnb’s Major Disruptive Events Policy.
+                  Make sure you&apos;re comfortable with this Host&apos;s
+                  policy. In rare cases, you may be eligible for a refund
+                  outside of this policy under Airbnb&apos;s Major Disruptive
+                  Events Policy.
                 </p>
                 <h4 className='font-medium py-4'>Refund polcies</h4>
                 {cancellation.full && (

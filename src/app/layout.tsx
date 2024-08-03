@@ -5,6 +5,7 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import BottomNav from '@/components/bottom-nav';
 import HomeContextProvider from '@/contexts/home-context-provider';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,7 +23,9 @@ export default function RootLayout({
     <html lang='en'>
       <body className={inter.className}>
         <HomeContextProvider>
-          <Header />
+          <Suspense fallback={<div>Loading...</div>}>
+            <Header />
+          </Suspense>
           {children}
           <Footer />
           <BottomNav />

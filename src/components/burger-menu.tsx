@@ -2,22 +2,44 @@
 
 import { useHomeContext } from '@/lib/hooks';
 import Link from 'next/link';
+import { useEffect, useRef, Dispatch, SetStateAction } from 'react';
 
 type BurgerMenuProps = {
   authToken: string | undefined;
   deleteCookie: () => void;
   unreadMessages: number | null;
+  setNavbarMenuOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function BurgerMenu({
   authToken,
   deleteCookie,
   unreadMessages,
+  setNavbarMenuOpen,
 }: BurgerMenuProps) {
   const { setIsLoginOpen } = useHomeContext();
-  console.log('unreadmessages:', unreadMessages);
+  // console.log('unreadmessages:', unreadMessages);
+
+  const navbarMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const navbarMenuHandler = (e: MouseEvent) => {
+      if (!navbarMenuRef.current?.contains(e.target as Node)) {
+        setNavbarMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', navbarMenuHandler);
+
+    return () => {
+      document.removeEventListener('mousedown', navbarMenuHandler);
+    };
+  }, []);
   return (
-    <nav className='absolute right-0  bg-white border border-black/5 rounded-xl w-[14rem] top-[120%] py-2 menu-shadow z-200'>
+    <nav
+      ref={navbarMenuRef}
+      className='absolute right-0  bg-white border border-black/5 rounded-xl w-[14rem] top-[120%] py-2 menu-shadow z-200'
+    >
       {!authToken ? (
         <ul>
           <li>

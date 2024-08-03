@@ -24,7 +24,7 @@ export default function RentalKeyPoints({
           <div className='flex flex-col'>
             <span className='text-sm font-semibold'>Dedicated workspace</span>
             <span className='text-sm opacity-70'>
-              A commmon area with wifi that's well suited for working
+              A commmon area with wifi that&apos;s well suited for working
             </span>
           </div>
         </div>

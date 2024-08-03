@@ -49,7 +49,7 @@ export default async function MessageBox({ conversationId }: MessageBoxProps) {
       <div className='px-6 flex flex-col gap-4 pb-4 h-[40rem] overflow-scroll w-full'>
         {processedMessages.map((message: Message) => (
           <div
-            key={message.rentalId}
+            key={message._id}
             className={`flex ${message.userSender ? 'justify-end' : ''}`}
           >
             <div

@@ -33,6 +33,7 @@ import { Checkbox } from './ui/checkbox';
 import { createRental } from '@/actions/actions';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import Image from 'next/image';
 
 const addressSchema = z.object({
   propertyName: z.string(),
@@ -232,7 +233,13 @@ export default function CreateForm() {
                     key={`image-${index}`}
                     onClick={() => handleImageClickDelete(src)}
                   >
-                    <img src={src} className='w-44 h-44 object-cover' />
+                    <Image
+                      src={src}
+                      width={240}
+                      height={240}
+                      className='w-44 h-44 object-cover'
+                      alt='upload image'
+                    />
                   </li>
                 ))}
               </ul>

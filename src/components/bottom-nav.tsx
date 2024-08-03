@@ -22,7 +22,7 @@ export default function BottomNav() {
         />
         Explore
       </Link>
-      <Link href='/' className=' flex flex-col items-center'>
+      <Link href='/wishlists' className=' flex flex-col items-center'>
         <Image
           src='https://cdns.iconmonstr.com/wp-content/releases/preview/7.7.0/240/iconmonstr-heart-lined.png'
           height={28}

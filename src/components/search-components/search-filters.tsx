@@ -488,12 +488,14 @@ export default function SearchFilters({ onApplyFilters }: SearchFiltersProps) {
 
         <div className='w-full h-[0.2px] bg-black/20 my-8' />
 
-        <Button
-          className='bg-black/90 w-full py-6 hover:bg-black my-4'
-          type='submit'
-        >
-          Apply filters
-        </Button>
+        <div className='w-full'>
+          <Button
+            className='bg-black/90 w-full py-6 hover:bg-black my-4'
+            type='submit'
+          >
+            Apply filters
+          </Button>
+        </div>
       </form>
     </Form>
   );

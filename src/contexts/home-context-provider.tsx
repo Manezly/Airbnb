@@ -16,9 +16,9 @@ type HomeContext = {
   setExperiencesOpen: (open: boolean) => void;
   navbarExpand: boolean;
   setNavbarExpand: (open: boolean) => void;
-  burgerMenuOpen: boolean;
-  setIsBurgerMenuOpen: (open: boolean) => void;
-  handleBurgerOpen: () => void;
+  // burgerMenuOpen: boolean;
+  // setIsBurgerMenuOpen: (open: boolean) => void;
+  // handleBurgerOpen: () => void;
   learnMoreOpen: boolean;
   openFooter: boolean;
   setOpenFooter: (open: boolean) => void;
@@ -36,7 +36,7 @@ export default function HomeContextProvider({
   const [staysOpen, setStaysOpen] = useState(true);
   const [experiencesOpen, setExperiencesOpen] = useState(false);
   const [navbarExpand, setNavbarExpand] = useState(true);
-  const [burgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
+  // const [burgerMenuOpen, setIsBurgerMenuOpen] = useState(false);
   const [learnMoreOpen, setLearnMoreOpen] = useState(true);
   const [openFooter, setOpenFooter] = useState(false);
   const [footerOptions, setFooterOptions] = useState(1);
@@ -76,19 +76,19 @@ export default function HomeContextProvider({
     };
   }, []);
   // Toggle Burger Menu=
-  useEffect(() => {
-    const handleBurgerClosure = () => {
-      if (burgerMenuOpen) {
-        setIsBurgerMenuOpen(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleBurgerClosure = () => {
+  //     if (burgerMenuOpen) {
+  //       setIsBurgerMenuOpen(false);
+  //     }
+  //   };
 
-    window.addEventListener('click', handleBurgerClosure);
+  //   window.addEventListener('click', handleBurgerClosure);
 
-    () => {
-      window.removeEventListener('click', handleBurgerClosure);
-    };
-  }, []);
+  //   () => {
+  //     window.removeEventListener('click', handleBurgerClosure);
+  //   };
+  // }, []);
 
   // Toggle learn more header link
   useEffect(() => {
@@ -109,9 +109,9 @@ export default function HomeContextProvider({
   }, []);
 
   // Desktop navbar burger open
-  const handleBurgerOpen = () => {
-    setIsBurgerMenuOpen((prev) => !prev);
-  };
+  // const handleBurgerOpen = () => {
+  //   setIsBurgerMenuOpen((prev) => !prev);
+  // };
 
   return (
     <HomeContext.Provider
@@ -125,9 +125,9 @@ export default function HomeContextProvider({
         setExperiencesOpen,
         navbarExpand,
         setNavbarExpand,
-        burgerMenuOpen,
-        setIsBurgerMenuOpen,
-        handleBurgerOpen,
+        // burgerMenuOpen,
+        // setIsBurgerMenuOpen,
+        // handleBurgerOpen,
         learnMoreOpen,
         openFooter,
         setOpenFooter,

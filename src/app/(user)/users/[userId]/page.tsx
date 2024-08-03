@@ -99,7 +99,9 @@ export default async function page({ params }: PageParamProps) {
 
         {/* Reviews */}
         <div>
-          <h4 className='text-xl font-bold mb-4'>{user.fullName}'s reviews</h4>
+          <h4 className='text-xl font-bold mb-4'>
+            {user.fullName}&apos;s reviews
+          </h4>
           <div className='grid grid-cols-2 gap-2 mb-6'>
             {reviews?.slice(0, 6).map((review) => (
               <div key={review._id} className='border-[1px] rounded-xl p-4'>
@@ -131,7 +133,7 @@ export default async function page({ params }: PageParamProps) {
         {/* Listings */}
         <div>
           <h4 className='text-xl font-bold -mb-[23rem]'>
-            {user.fullName}'s listings
+            {user.fullName}&apos;s listings
           </h4>
           <CardContainer results={rentals} />
         </div>

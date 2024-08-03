@@ -1,4 +1,3 @@
-import GoogleMap from '@/components/google-map';
 import {
   Dialog,
   DialogContent,
@@ -7,6 +6,7 @@ import {
   DialogTrigger,
 } from '../ui/dialog';
 import Link from 'next/link';
+import GoogleMapComponent from './google-map';
 
 type GoogleMapContainer = {
   address: string;
@@ -20,14 +20,14 @@ export default function GoogleMapContainer({
   address,
   coords,
 }: GoogleMapContainer) {
-  console.log(coords);
+  // console.log(coords);
   return (
     <section>
-      <h2 className='text-xl font-medium'>Where you'll be</h2>
+      <h2 className='text-xl font-medium'>Where you&apos;ll be</h2>
       <p className='py-4 opacity-90'>{address}</p>
-      <GoogleMap coords={coords} />
+      <GoogleMapComponent coords={coords} />
       <span>
-        We verified that this listing's location is accurate. &nbsp;
+        We verified that this listing&apos;s location is accurate. &nbsp;
         <Dialog>
           <DialogTrigger asChild>
             <button className='underline pt-2 pb-10'> Learn more</button>

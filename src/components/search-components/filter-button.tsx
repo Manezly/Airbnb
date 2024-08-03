@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -40,7 +40,9 @@ export default function FilterButton() {
       <DialogPortal>
         <DialogOverlay className='fixed inset-0 bg-black/50 z-50' />
         <DialogContent className='fixed left-[50%] top-[50%] z-50 w-full max-w-[45rem] transform -translate-x-[50%] -translate-y-[50%] bg-white p-6 shadow-lg rounded-lg max-h-[80%] overflow-y-auto'>
-          <SearchFilters onApplyFilters={handleApplyFilters} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <SearchFilters onApplyFilters={handleApplyFilters} />
+          </Suspense>
         </DialogContent>
       </DialogPortal>
     </Dialog>

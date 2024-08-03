@@ -1,10 +1,14 @@
-import MessagesNavigation from '@/components/messages/messages-navigation';
-import React from 'react';
+export const dynamic = 'force-dynamic';
 
-export default async function page() {
+import MessagesNavigation from '@/components/messages/messages-navigation';
+import { Suspense } from 'react';
+
+export default function page() {
   return (
     <section className='flex container-real '>
-      <MessagesNavigation />
+      <Suspense fallback={<div>Loading messages...</div>}>
+        <MessagesNavigation />
+      </Suspense>
       <div className='flex justify-center items-center w-full h-auto border-[1px]'>
         Message Container
       </div>

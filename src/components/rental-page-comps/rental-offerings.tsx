@@ -24,7 +24,7 @@ export default function RentalOfferings({
       <h3 className='text-xl font-medium pb-4'>What this place offers</h3>
       <div className='grid grid-cols-2 gap-2'>
         {guestFavourites.map((offer: string) => (
-          <div className='flex gap-2 items-center'>
+          <div className='flex gap-2 items-center' key={offer}>
             <Image
               src='data:image/svg+xml;base64,PHN2ZyBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMS45OTgiIGN5PSIxMS45OTgiIGZpbGwtcnVsZT0ibm9uemVybyIgcj0iOS45OTgiLz48L3N2Zz4='
               width={40}
