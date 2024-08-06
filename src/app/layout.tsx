@@ -6,6 +6,8 @@ import Footer from '@/components/footer';
 import BottomNav from '@/components/bottom-nav';
 import HomeContextProvider from '@/contexts/home-context-provider';
 import { Suspense } from 'react';
+import { cookies } from 'next/headers';
+import { deleteCookie } from '@/actions/actions';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,12 +21,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const authToken = cookies().get('authToken')?.value;
+  // console.log(authToken);
+
+  // const handleDeleteCookie = async () => {
+  //   await deleteCookie('authToken');
+  //   window.location.reload();
+  // };
   return (
     <html lang='en'>
       <body className={inter.className}>
         <HomeContextProvider>
           <Suspense fallback={<div>Loading...</div>}>
-            <Header />
+            <Header
+              authToken={authToken}
+              // handleDeleteCookie={handleDeleteCookie}
+            />
           </Suspense>
           {children}
           <Footer />

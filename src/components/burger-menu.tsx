@@ -34,7 +34,7 @@ export default function BurgerMenu({
     return () => {
       document.removeEventListener('mousedown', navbarMenuHandler);
     };
-  }, []);
+  }, [setNavbarMenuOpen]);
   return (
     <nav
       ref={navbarMenuRef}

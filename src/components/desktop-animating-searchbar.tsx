@@ -45,30 +45,64 @@ export default function DesktopAnimatingSearchBar() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const datePickerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const searchParams = new URLSearchParams(window.location.search);
 
-  const [selectedCountry, setSelectedCountry] = useState<string | undefined>(
-    new URLSearchParams(window.location.search).get('country') || "I'm flexible"
-  );
+  // const searchParams = new URLSearchParams(window.location.search);
+  // const [selectedCountry, setSelectedCountry] = useState<string | undefined>(
+  //   new URLSearchParams(window.location.search).get('country') || "I'm flexible"
+  // );
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
   const countryDropdownRef = useRef<HTMLDivElement>(null);
-  const fromDateParam = searchParams.get('fromDate');
-  const toDateParam = searchParams.get('toDate');
-  const initialDateRange =
-    fromDateParam && toDateParam
-      ? {
-          from: new Date(fromDateParam),
-          to: new Date(toDateParam),
-        }
-      : undefined;
+  // const fromDateParam = searchParams.get('fromDate');
+  // const toDateParam = searchParams.get('toDate');
+  // const initialDateRange =
+  //   fromDateParam && toDateParam
+  //     ? {
+  //         from: new Date(fromDateParam),
+  //         to: new Date(toDateParam),
+  //       }
+  //     : undefined;
 
   const [guestsDropdownOpen, setGuestsDropdownOpen] = useState(false);
-  const [selectedGuests, setSelectedGuests] = useState<number | undefined>(
-    searchParams.get('guests')
-      ? parseInt(searchParams.get('guests') || '0', 10) // Provide a default value of '0' if it is null
-      : undefined
-  );
+  // const [selectedGuests, setSelectedGuests] = useState<number | undefined>(
+  //   searchParams.get('guests')
+  //     ? parseInt(searchParams.get('guests') || '0', 10) // Provide a default value of '0' if it is null
+  //     : undefined
+  // );
   const guestsDropdownRef = useRef<HTMLDivElement>(null);
+
+  const [searchParams, setSearchParams] = useState<URLSearchParams | null>(
+    null
+  );
+  const [selectedCountry, setSelectedCountry] = useState<string | undefined>(
+    "I'm flexible"
+  );
+  const [fromDateParam, setFromDateParam] = useState<string | null>(null);
+  const [toDateParam, setToDateParam] = useState<string | null>(null);
+  const [initialDateRange, setInitialDateRange] = useState<
+    DateRange | undefined
+  >();
+  const [selectedGuests, setSelectedGuests] = useState<number | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setSearchParams(params);
+    setSelectedCountry(params.get('country') || "I'm flexible");
+    setFromDateParam(params.get('fromDate'));
+    setToDateParam(params.get('toDate'));
+    setSelectedGuests(
+      params.get('guests')
+        ? parseInt(params.get('guests') || '0', 10) // Provide a default value of '0' if it is null
+        : undefined
+    );
+    if (params.get('fromDate') && params.get('toDate')) {
+      setInitialDateRange({
+        from: new Date(params.get('fromDate') as string),
+        to: new Date(params.get('toDate') as string),
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const datePickerHandler = (e: MouseEvent) => {
@@ -154,27 +188,27 @@ export default function DesktopAnimatingSearchBar() {
 
   const handleSubmit = (data: FormData) => {
     if (data.dateRange?.from) {
-      searchParams.set('fromDate', data.dateRange.from.toISOString());
+      searchParams?.set('fromDate', data.dateRange.from.toISOString());
     } else {
-      searchParams.delete('fromDate');
+      searchParams?.delete('fromDate');
     }
     if (data.dateRange?.to) {
-      searchParams.set('toDate', data.dateRange.to.toISOString());
+      searchParams?.set('toDate', data.dateRange.to.toISOString());
     } else {
-      searchParams.delete('toDate');
+      searchParams?.delete('toDate');
     }
     if (data.country) {
-      searchParams.set('country', data.country);
+      searchParams?.set('country', data.country);
     } else {
-      searchParams.delete('country');
+      searchParams?.delete('country');
     }
     if (data.guests) {
       const guestsValue = data.guests === 13 ? '12+' : data.guests.toString();
-      searchParams.set('guests', guestsValue);
+      searchParams?.set('guests', guestsValue);
     } else {
-      searchParams.delete('guests');
+      searchParams?.delete('guests');
     }
-    router.push(`/?${searchParams.toString()}`);
+    router.push(`/?${searchParams?.toString()}`);
   };
 
   return (

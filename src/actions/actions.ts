@@ -35,6 +35,10 @@ export const sendVerificationCode = async (phoneNumber: string) => {
   return verfication.sid;
 };
 
+export async function deleteCookie(name: string) {
+  cookies().delete(name);
+}
+
 export const verifyCode = async (phoneNumber: string, code: string) => {
   await connectDB();
 

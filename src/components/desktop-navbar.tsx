@@ -12,27 +12,33 @@ import { useHomeContext } from '@/lib/hooks';
 import { redirect, usePathname } from 'next/navigation';
 import { useCookies } from 'next-client-cookies';
 import { useEffect, useRef, useState } from 'react';
+import { deleteCookie } from '@/actions/actions';
 
 type DesktopNavbarProps = {
   unreadMessages: number;
   username: string | null;
+  authToken: string | undefined;
 };
 
 export default function DesktopNavBar({
   unreadMessages,
   username,
+  authToken,
 }: DesktopNavbarProps) {
   // const { navbarExpand, burgerMenuOpen, handleBurgerOpen } = useHomeContext();
   const { navbarExpand } = useHomeContext();
   const pathname = usePathname();
-  const cookies = useCookies();
-  const authToken = cookies.get('authToken');
-
+  // const cookies = useCookies();
+  // const authToken = cookies.get('authToken');
   const [navbarMenuOpen, setNavbarMenuOpen] = useState(false);
 
-  const deleteCookie = () => {
-    cookies.remove('authToken');
-    redirect('/');
+  // const deleteCookie = () => {
+  //   cookies.remove('authToken');
+  //   redirect('/');
+  // };
+  const handleDeleteCookie = async () => {
+    await deleteCookie('authToken');
+    window.location.reload(); // or use next/navigation's router to redirect
   };
 
   return (
@@ -103,7 +109,7 @@ export default function DesktopNavBar({
                   <BurgerMenu
                     setNavbarMenuOpen={setNavbarMenuOpen}
                     authToken={authToken}
-                    deleteCookie={deleteCookie}
+                    deleteCookie={handleDeleteCookie}
                     unreadMessages={unreadMessages}
                   />
                 )}
@@ -129,7 +135,7 @@ export default function DesktopNavBar({
                   <BurgerMenu
                     setNavbarMenuOpen={setNavbarMenuOpen}
                     authToken={authToken}
-                    deleteCookie={deleteCookie}
+                    deleteCookie={handleDeleteCookie}
                     unreadMessages={unreadMessages}
                   />
                 )}

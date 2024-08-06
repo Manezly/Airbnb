@@ -15,7 +15,15 @@ import AuthenticateForm from './authenticate-form';
 import { useEffect, useState } from 'react';
 import { countUnreadMessages, fetchUsername } from '@/actions/actions';
 
-export default function Header() {
+type HeaderProps = {
+  authToken: string | undefined;
+  // handleDeleteCookie: () => void;
+};
+
+export default function Header({
+  authToken,
+}: // handleDeleteCookie
+HeaderProps) {
   const { isLoginOpen, setIsLoginOpen } = useHomeContext();
   const [unreadMessages, setUnreadMessages] = useState<number>(0);
   const [username, setUsername] = useState<string>('');
@@ -41,7 +49,12 @@ export default function Header() {
   return (
     <header className='z-60'>
       <MobileSearchbar />
-      <DesktopNavBar unreadMessages={unreadMessages} username={username} />
+      <DesktopNavBar
+        unreadMessages={unreadMessages}
+        username={username}
+        authToken={authToken}
+        // handleDeleteCookie={handleDeleteCookie}
+      />
 
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
         <DialogPortal>
