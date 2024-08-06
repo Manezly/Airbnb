@@ -183,7 +183,7 @@ export const createMessage = async (data: createMessageProps) => {
       });
     }
 
-    console.log(conversation);
+    // console.log(conversation);
 
     const message = new Message({
       text: data.text,
@@ -511,7 +511,7 @@ export const editRental = async (data: FetchedRentalSchema, id: string) => {
     );
     data.images = imageUrls;
 
-    console.log('Updated images:', data.images);
+    // console.log('Updated images:', data.images);
 
     // Ensure data._id is set correctly
     if (!data._id) {
@@ -742,7 +742,7 @@ export async function fetchAllRentals(
       }
     }
 
-    console.log('The query is:', JSON.stringify(query, null, 2));
+    // console.log('The query is:', JSON.stringify(query, null, 2));
 
     const totalRentals = await Rental.countDocuments(query);
     const numberOfPages = Math.ceil(totalRentals / rentalsPerPage);

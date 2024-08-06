@@ -138,7 +138,7 @@ export default function BurgerMenu({
           <li>
             <Link
               className='block hover:bg-black/[3%] w-full text-left pl-2 py-3 text-sm font-normal'
-              href='/listings'
+              href='/account-settings/personal-info'
             >
               Account
             </Link>
