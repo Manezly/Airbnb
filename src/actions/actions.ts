@@ -1,4 +1,6 @@
-'use server';
+export const maxDuration = 6000;
+
+('use server');
 
 import twilio from 'twilio';
 import User from '../lib/models/User';
