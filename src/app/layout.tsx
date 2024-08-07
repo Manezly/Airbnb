@@ -1,4 +1,4 @@
-export const maxDuration = 6000;
+export const maxDuration = 60000;
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
