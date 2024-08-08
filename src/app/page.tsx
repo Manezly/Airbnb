@@ -127,6 +127,7 @@
 import { fetchAllRentals } from '@/actions/actions';
 import CardContainer from '@/components/card-container';
 import PaginationController from '@/components/pagination-controller';
+import { TRental } from '@/lib/types';
 import { useEffect, useState } from 'react';
 
 type SearchParamProps = {
@@ -158,7 +159,7 @@ const parseSearchParams = (searchParams: {
 };
 
 export default function Home({ searchParams }: SearchParamProps) {
-  const [rentals, setRentals] = useState([]);
+  const [rentals, setRentals] = useState<TRental[]>([]);
   const [numberOfPages, setNumberOfPages] = useState(1);
   const [page, setPage] = useState(searchParams.page || 1);
 
