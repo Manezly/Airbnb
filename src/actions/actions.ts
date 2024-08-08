@@ -639,24 +639,24 @@ export async function fetchRentalBySearch(
   }
 }
 
+type RentalQuery = {
+  propertyType?: { $regex: string; $options: string };
+  rentalType?: { $regex: string; $options: string };
+  rates?: { $gte?: number; $lte?: number };
+  beds?: string;
+  bedrooms?: string;
+  bathrooms?: string;
+  guests?: string;
+  guestFavourites?: { $all: RegExp[] };
+  standoutAmenities?: { $all: RegExp[] };
+  safetyItems?: { $all: RegExp[] };
+  _id?: { $nin: any[] };
+  'address.country'?: { $regex: string; $options: string };
+  $or?: { [key: string]: any }[];
+};
+
 export async function fetchAllRentals(
-  filters: {
-    propertyType?: string;
-    typeOfPlace?: string;
-    minRate?: number;
-    maxRate?: number;
-    beds?: string;
-    bedrooms?: string;
-    bathrooms?: string;
-    guestFavourites?: string[];
-    standoutAmenities?: string[];
-    safetyItems?: string[];
-    fromDate?: string;
-    toDate?: string;
-    country?: string;
-    guests?: string;
-    page?: number;
-  },
+  query: RentalQuery,
   page: number = 1
 ): Promise<RentalsResponse> {
   await connectDB();
@@ -664,83 +664,6 @@ export async function fetchAllRentals(
   try {
     const rentalsPerPage = 2;
     const skip = (page - 1) * rentalsPerPage;
-
-    const query: any = {};
-    if (filters.propertyType)
-      query.propertyType = { $regex: filters.propertyType, $options: 'i' };
-    if (filters.typeOfPlace)
-      query.rentalType = { $regex: filters.typeOfPlace, $options: 'i' };
-    if (filters.minRate !== undefined || filters.maxRate !== undefined) {
-      query.rates = {};
-      if (filters.minRate !== undefined) query.rates.$gte = filters.minRate;
-      if (filters.maxRate !== undefined) query.rates.$lte = filters.maxRate;
-    }
-    if (filters.beds) {
-      if (filters.beds === '12+') {
-        query.beds = '12+';
-      } else {
-        query.$or = [{ beds: filters.beds }, { beds: '12+' }];
-      }
-    }
-    if (filters.bedrooms) {
-      if (filters.bedrooms === '12+') {
-        query.bedrooms = '12+';
-      } else {
-        query.$or = [{ bedsrooms: filters.bedrooms }, { bedrooms: '12+' }];
-      }
-    }
-    if (filters.bathrooms) {
-      if (filters.bathrooms === '12+') {
-        query.bathrooms = '12+';
-      } else {
-        query.$or = [{ bathrooms: filters.bathrooms }, { bathrooms: '12+' }];
-      }
-    }
-    if (filters.guestFavourites) {
-      query.guestFavourites = {
-        $all: filters.guestFavourites.map(
-          (favourite) => new RegExp(favourite, 'i')
-        ),
-      };
-    }
-    if (filters.standoutAmenities) {
-      query.standoutAmenities = {
-        $all: filters.standoutAmenities.map(
-          (amenity) => new RegExp(amenity, 'i')
-        ),
-      };
-    }
-    if (filters.safetyItems) {
-      query.safetyItems = {
-        $all: filters.safetyItems.map((item) => new RegExp(item, 'i')),
-      };
-    }
-    if (filters.fromDate && filters.toDate) {
-      const fromDate = new Date(filters.fromDate);
-      const toDate = new Date(filters.toDate);
-
-      // Find bookings that overlap with the date range
-      const overlappingBookings = await Booking.find({
-        $or: [{ startDate: { $lt: toDate }, endDate: { $gt: fromDate } }],
-      }).select('rental');
-
-      const overlappingRentalIds = overlappingBookings.map(
-        (booking) => booking.rental
-      );
-
-      // Exclude rentals with overlapping bookings
-      query._id = { $nin: overlappingRentalIds };
-    }
-    if (filters.country) {
-      query['address.country'] = { $regex: filters.country, $options: 'i' };
-    }
-    if (filters.guests) {
-      if (filters.guests === '12+') {
-        query.guests = '12+';
-      } else {
-        query.$or = [{ guests: filters.guests }, { guests: '12+' }];
-      }
-    }
 
     // console.log('The query is:', JSON.stringify(query, null, 2));
 
@@ -775,6 +698,143 @@ export async function fetchAllRentals(
     throw new Error('Error fetching rental data');
   }
 }
+
+// export async function fetchAllRentals(
+//   filters: {
+//     propertyType?: string;
+//     typeOfPlace?: string;
+//     minRate?: number;
+//     maxRate?: number;
+//     beds?: string;
+//     bedrooms?: string;
+//     bathrooms?: string;
+//     guestFavourites?: string[];
+//     standoutAmenities?: string[];
+//     safetyItems?: string[];
+//     fromDate?: string;
+//     toDate?: string;
+//     country?: string;
+//     guests?: string;
+//     page?: number;
+//   },
+//   page: number = 1
+// ): Promise<RentalsResponse> {
+//   await connectDB();
+
+//   try {
+//     const rentalsPerPage = 2;
+//     const skip = (page - 1) * rentalsPerPage;
+
+//     const query: any = {};
+//     if (filters.propertyType)
+//       query.propertyType = { $regex: filters.propertyType, $options: 'i' };
+//     if (filters.typeOfPlace)
+//       query.rentalType = { $regex: filters.typeOfPlace, $options: 'i' };
+//     if (filters.minRate !== undefined || filters.maxRate !== undefined) {
+//       query.rates = {};
+//       if (filters.minRate !== undefined) query.rates.$gte = filters.minRate;
+//       if (filters.maxRate !== undefined) query.rates.$lte = filters.maxRate;
+//     }
+//     if (filters.beds) {
+//       if (filters.beds === '12+') {
+//         query.beds = '12+';
+//       } else {
+//         query.$or = [{ beds: filters.beds }, { beds: '12+' }];
+//       }
+//     }
+//     if (filters.bedrooms) {
+//       if (filters.bedrooms === '12+') {
+//         query.bedrooms = '12+';
+//       } else {
+//         query.$or = [{ bedsrooms: filters.bedrooms }, { bedrooms: '12+' }];
+//       }
+//     }
+//     if (filters.bathrooms) {
+//       if (filters.bathrooms === '12+') {
+//         query.bathrooms = '12+';
+//       } else {
+//         query.$or = [{ bathrooms: filters.bathrooms }, { bathrooms: '12+' }];
+//       }
+//     }
+//     if (filters.guestFavourites) {
+//       query.guestFavourites = {
+//         $all: filters.guestFavourites.map(
+//           (favourite) => new RegExp(favourite, 'i')
+//         ),
+//       };
+//     }
+//     if (filters.standoutAmenities) {
+//       query.standoutAmenities = {
+//         $all: filters.standoutAmenities.map(
+//           (amenity) => new RegExp(amenity, 'i')
+//         ),
+//       };
+//     }
+//     if (filters.safetyItems) {
+//       query.safetyItems = {
+//         $all: filters.safetyItems.map((item) => new RegExp(item, 'i')),
+//       };
+//     }
+//     if (filters.fromDate && filters.toDate) {
+//       const fromDate = new Date(filters.fromDate);
+//       const toDate = new Date(filters.toDate);
+
+//       // Find bookings that overlap with the date range
+//       const overlappingBookings = await Booking.find({
+//         $or: [{ startDate: { $lt: toDate }, endDate: { $gt: fromDate } }],
+//       }).select('rental');
+
+//       const overlappingRentalIds = overlappingBookings.map(
+//         (booking) => booking.rental
+//       );
+
+//       // Exclude rentals with overlapping bookings
+//       query._id = { $nin: overlappingRentalIds };
+//     }
+//     if (filters.country) {
+//       query['address.country'] = { $regex: filters.country, $options: 'i' };
+//     }
+//     if (filters.guests) {
+//       if (filters.guests === '12+') {
+//         query.guests = '12+';
+//       } else {
+//         query.$or = [{ guests: filters.guests }, { guests: '12+' }];
+//       }
+//     }
+
+//     // console.log('The query is:', JSON.stringify(query, null, 2));
+
+//     const totalRentals = await Rental.countDocuments(query);
+//     const numberOfPages = Math.ceil(totalRentals / rentalsPerPage);
+
+//     const rentals = await Rental.find(query).skip(skip).limit(rentalsPerPage);
+
+//     if (!rentals.length) {
+//       console.error('No rentals found');
+//     }
+
+//     const userIds = rentals.map((rental) => rental.userId);
+//     const users = await User.find({ _id: { $in: userIds } });
+
+//     const userMap = new Map(
+//       users.map((user) => [user._id.toString(), user.fullName])
+//     );
+
+//     const enhancedRentals = rentals.map((rental) => {
+//       const userId = rental.userId.toString();
+//       const fullName = userMap.get(userId);
+//       return {
+//         ...rental.toObject(),
+//         fullName: fullName,
+//       };
+//     });
+
+//     return { rentals: enhancedRentals, numberOfPages };
+//   } catch (error) {
+//     console.error('Error fetching rental data:', error);
+//     throw new Error('Error fetching rental data');
+//   }
+// }
 
 type saveRentalBookingProps = {
   dateRange: {

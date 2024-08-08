@@ -140,7 +140,7 @@ type SearchParamProps = {
 const parseSearchParams = (searchParams: {
   [key: string]: any;
 }): { [key: string]: any } => {
-  const filters: { [key: string]: any } = {};
+  const query: { [key: string]: any } = {};
 
   Object.entries(searchParams).forEach(([key, value]) => {
     if (
@@ -149,13 +149,43 @@ const parseSearchParams = (searchParams: {
         key === 'standoutAmenities' ||
         key === 'safetyItems')
     ) {
-      filters[key] = value.split(',');
+      query[key] = {
+        $all: value.split(',').map((item) => new RegExp(item, 'i')),
+      };
+    } else if (key === 'propertyType') {
+      query.propertyType = { $regex: value, $options: 'i' };
+    } else if (key === 'typeOfPlace') {
+      query.rentalType = { $regex: value, $options: 'i' };
+    } else if (key === 'minRate' || key === 'maxRate') {
+      if (!query.rates) query.rates = {};
+      if (key === 'minRate') query.rates.$gte = parseFloat(value);
+      if (key === 'maxRate') query.rates.$lte = parseFloat(value);
+    } else if (
+      key === 'beds' ||
+      key === 'bedrooms' ||
+      key === 'bathrooms' ||
+      key === 'guests'
+    ) {
+      if (value === '12+') {
+        query[key] = '12+';
+      } else {
+        query.$or = [{ [key]: value }, { [key]: '12+' }];
+      }
+    } else if (key === 'fromDate' && searchParams.toDate) {
+      const fromDate = new Date(value);
+      const toDate = new Date(searchParams.toDate);
+      query._id = {
+        $nin: [], // This will be filled in with overlapping rental IDs by the server
+      };
+      // Note: The server will need to handle the date range overlapping logic as it requires another query.
+    } else if (key === 'country') {
+      query['address.country'] = { $regex: value, $options: 'i' };
     } else {
-      filters[key] = value;
+      query[key] = value;
     }
   });
 
-  return filters;
+  return query;
 };
 
 export default function Home({ searchParams }: SearchParamProps) {
@@ -166,16 +196,14 @@ export default function Home({ searchParams }: SearchParamProps) {
   // Parse the search parameters
   useEffect(() => {
     const fetchRentals = async () => {
-      const filters = parseSearchParams(searchParams);
-      const { rentals, numberOfPages } = await fetchAllRentals(filters, page);
+      const query = parseSearchParams(searchParams); // Correct usage of the query variable
+      const { rentals, numberOfPages } = await fetchAllRentals(query, page);
       setRentals(rentals);
       setNumberOfPages(numberOfPages);
     };
 
     fetchRentals();
   }, [searchParams, page]);
-
-  // console.log(filters);
 
   return (
     <>
