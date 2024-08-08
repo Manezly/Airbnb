@@ -1,4 +1,4 @@
-export const maxDuration = 60000;
+// export const maxDuration = 60000;
 
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
@@ -26,6 +26,7 @@ export default function RootLayout({
 
   return (
     <html lang='en'>
+      <link rel='icon' href='/favicon.ico' sizes='any' />
       <body className={inter.className}>
         <HomeContextProvider>
           <Suspense fallback={<div>Loading...</div>}>

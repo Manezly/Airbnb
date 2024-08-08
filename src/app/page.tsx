@@ -18,14 +18,14 @@ export default async function Home({ searchParams }: SearchParamProps) {
   // Parse the search parameters
   const filters = parseSearchParams(new URLSearchParams(searchParams));
 
-  // const { rentals, numberOfPages } = await fetchAllRentals(filters, page);
+  const { rentals, numberOfPages } = await fetchAllRentals(filters, page);
 
   // console.log(filters);
 
   return (
     <>
-      {/* <CardContainer results={rentals} />
-      <PaginationController numberOfPages={numberOfPages} /> */}
+      <CardContainer results={rentals} />
+      <PaginationController numberOfPages={numberOfPages} />
       hope
     </>
   );

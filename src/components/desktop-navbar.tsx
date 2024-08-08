@@ -57,13 +57,13 @@ export default function DesktopNavBar({
           } ${!navbarExpand ? 'closed' : ''} h-[240px]`}
         >
           <Link href='/' className='flex items-center gap-1'>
-            <Image
+            {/* <Image
               src='/airbnb-icon-small.svg'
               width={30}
               height={30}
               priority
               alt='airbnb image'
-            />
+            /> */}
             <span className='hidden lg:block font-extrabold text-xl text-rose-500 tracking-tight'>
               airbnb
             </span>
